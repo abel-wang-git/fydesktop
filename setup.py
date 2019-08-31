@@ -9,7 +9,7 @@ setup(
     license="MIT",
     description="fwdesktop is a Python 3 script",
     long_description="fwdesktop is a Python 3 script",
-    install_requires=["threadpool"],
+    install_requires=["threadpool","appdirs","pillow"],
     packages=find_packages(),
     entry_points={
         'console_scripts': [
