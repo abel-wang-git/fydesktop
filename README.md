@@ -29,7 +29,6 @@ fwdesktop是基于python3的一个脚本，它会实时获取地球图片设置�
 
 ## systemd 方式定时任务
 ####   Service 单元
-    ```Bash
     vim /usr/lib/systemd/system/fwdesktop.service
     #添加以下内容    
     [Unit]
@@ -37,7 +36,6 @@ fwdesktop是基于python3的一个脚本，它会实时获取地球图片设置�
     
     [Service]
     ExecStart=/usr/bin/fwdesktop #此处为fwdesktop的安装路径 通过 whereis fwdesktop 获取
-    ```
 #### Timer 单元
      ```Bash
      vim /usr/lib/systemd/system/fwdesktopTimer.timer
