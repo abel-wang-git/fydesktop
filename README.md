@@ -37,7 +37,6 @@ fwdesktop是基于python3的一个脚本，它会实时获取地球图片设置�
     [Service]
     ExecStart=/usr/bin/fwdesktop #此处为fwdesktop的安装路径 通过 whereis fwdesktop 获取
 #### Timer 单元
-     ```Bash
      vim /usr/lib/systemd/system/fwdesktopTimer.timer
       #添加以下内容    
      [Unit]
@@ -50,11 +49,9 @@ fwdesktop是基于python3的一个脚本，它会实时获取地球图片设置�
     
      [Install]
      WantedBy=multi-user.target
-     ```
 #### 启用
-    ```Bash
     systemctl enable fwdesktopTimer.timer
     systemctl enable fwdesktopTimer.timer
-    ```
+
 ##  [KDE用户](https://github.com/boramalper/himawaripy#for-kde-users)
 ##  [OS X](https://github.com/boramalper/himawaripy#for-mac-osx-users)
