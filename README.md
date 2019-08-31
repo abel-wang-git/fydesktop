@@ -1,4 +1,5 @@
 # fwdesktop
+![alt](https://github.com/wanghuiwen1/fwdesktop/fwdesktop-201908310915.png)
 fwdesktop是基于python3的一个脚本，它会实时获取地球图片设置为桌面背景，灵感来自于[himawaripy](https://github.com/boramalper/himawaripy)<br>
 设置每15分钟运行一次的的cronjob（或systemd服务），以自动获取地球的近实时图片。
 ##  支持的桌面环境
@@ -26,5 +27,36 @@ fwdesktop是基于python3的一个脚本，它会实时获取地球图片设置�
   fwdesktop
   ```
 
+## systemd 方式定时任务
+####   Service 单元
+    ```Bash
+    vim /usr/lib/systemd/system/fwdesktop.service
+    #添加以下内容    
+    [Unit]
+    Description=fwdesktop
+    
+    [Service]
+    ExecStart=/usr/bin/fwdesktop #此处为fwdesktop的安装路径 通过 whereis fwdesktop 获取
+    ```
+#### Timer 单元
+     ```Bash
+     vim /usr/lib/systemd/system/fwdesktopTimer.timer
+      #添加以下内容    
+     [Unit]
+     Description=fwdesktopTimer
+    
+     [Timer]
+     OnBootSec=1s
+     OnUnitActiveSec=15m
+     Unit=fwdesktop.service
+    
+     [Install]
+     WantedBy=multi-user.target
+     ```
+#### 启用
+    ```Bash
+    systemctl enable fwdesktopTimer.timer
+    systemctl enable fwdesktopTimer.timer
+    ```
 ##  [KDE用户](https://github.com/boramalper/himawaripy#for-kde-users)
 ##  [OS X](https://github.com/boramalper/himawaripy#for-mac-osx-users)

@@ -1,0 +1,6 @@
+[Unit]
+Description=fwdesktop
+
+[Service]
+ExecStart=/usr/bin/fwdesktop
+

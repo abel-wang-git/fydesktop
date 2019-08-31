@@ -1,0 +1,11 @@
+[Unit]
+Description=fwdesktopTimer
+
+[Timer]
+OnBootSec=1s
+OnUnitActiveSec=15m
+Unit=fwdesktop.service
+
+[Install]
+WantedBy=multi-user.target
+
