@@ -106,7 +106,7 @@ def plasma_version():
 def set_wall(file_path):
     desk = get_desktop_environment()
     if desk == "windows":
-        ctypes.windll.user32.SystemParametersInfoW(20, 0, file_path, 0)
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, file_path, 3)
     elif desk == "mac":
         subprocess.call(["osascript", "-e",
                          'tell application "System Events"\n'
