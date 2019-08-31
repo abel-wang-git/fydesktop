@@ -1,5 +1,5 @@
 # fwdesktop
-![alt](https://github.com/wanghuiwen1/fwdesktop/fwdesktop-201908310915.png)
+![alt](https://github.com/wanghuiwen1/fwdesktop/blob/master/fwdesktop-201908310915.png?raw=true)
 fwdesktop是基于python3的一个脚本，它会实时获取地球图片设置为桌面背景，灵感来自于[himawaripy](https://github.com/boramalper/himawaripy)<br>
 设置每15分钟运行一次的的cronjob（或systemd服务），以自动获取地球的近实时图片。
 ##  支持的桌面环境
