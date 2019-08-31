@@ -26,6 +26,9 @@ fwdesktop是基于python3的一个脚本，它会实时获取地球图片设置�
   python setup.py install
   fwdesktop
   ```
+## win10定时任务
+windows安装后会打印命令安装的位置 一般为 C:\Users\Administrator\AppData\Local\Programs\Python\Python37-32\Scripts<br>
+[定时任务](https://blog.csdn.net/xielifu/article/details/81016220)
 
 ## systemd 方式定时任务
 ####   Service 单元
