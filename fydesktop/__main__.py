@@ -166,18 +166,18 @@ def parse_arg():
     parser.add_argument('-lever', type=int, default=2, help="lever (2,4,8)", )
     parser.add_argument("-outdir", type=str, dest="outdir",
                         help="directory to save the temporary background image",
-                        default=appdirs.user_cache_dir(appname="fwdesktop", appauthor=False))
+                        default=appdirs.user_cache_dir(appname="fydesktop", appauthor=False))
     parser.add_argument('-save_his', type=bool, default=False, help="Is save image download history", )
     args = parser.parse_args()
     return args
 
 
 def save_img(arg, date, time, to_image):
-    output_file = os.path.join(arg.outdir, "fwdesktop-%s%s.png" % (date, time))
+    output_file = os.path.join(arg.outdir, "fydesktop-%s%s.png" % (date, time))
     print("\nSaving to '%s'..." % (output_file,))
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     if(not arg.save_his):
-        for file in iglob(os.path.join(arg.outdir, "fwdesktop-*.png")):
+        for file in iglob(os.path.join(arg.outdir, "fydesktop-*.png")):
             os.remove(file)
     to_image.save(output_file)
     set_wall(output_file)

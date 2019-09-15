@@ -1,10 +1,10 @@
 [Unit]
-Description=fwdesktopTimer
+Description=fydesktopTimer
 
 [Timer]
 OnBootSec=1s
 OnUnitActiveSec=15m
-Unit=fwdesktop.service
+Unit=fydesktop.service
 
 [Install]
 WantedBy=multi-user.target

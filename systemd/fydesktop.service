@@ -1,0 +1,6 @@
+[Unit]
+Description=fydesktop
+
+[Service]
+ExecStart=/usr/bin/fydesktop
+

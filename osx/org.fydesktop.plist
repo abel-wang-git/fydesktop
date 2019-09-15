@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>org.fwdesktop</string>
+  <string>org.fydesktop</string>
 
   <key>ProgramArguments</key>
   <array>
-    <string>/usr/local/bin/fwdesktop</string>
+    <string>/usr/local/bin/fydesktop</string>
   </array>
 
   <key>Nice</key>
