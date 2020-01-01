@@ -1,18 +1,21 @@
-import PIL.Image as Image
+import argparse
+import ctypes
 import io
 import json
-import threadpool
-import urllib.request
-import sys
 import os
-import subprocess
-import ctypes
-import argparse
-import appdirs
-from glob import iglob
 import re
+import subprocess
+import sys
+import urllib.request
+from datetime import datetime
 from distutils.version import LooseVersion
+from glob import iglob
 
+import PIL.Image as Image
+import appdirs
+import threadpool
+from apscheduler.executors.pool import ProcessPoolExecutor
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # 坐标范围
 x = -5500
@@ -120,7 +123,6 @@ def set_wall(file_path):
                 subprocess.call(
                     ["xfconf-query", "--channel", "xfce4-desktop", "--property", display, "--set", file_path])
         elif desk in ["gnome", "unity", "cinnamon", "pantheon", "gnome-classic"]:
-            # Because of a bug and stupid design of gsettings, see http://askubuntu.com/a/418521/388226
             if desk == "unity":
                 subprocess.call(["gsettings", "set", "org.gnome.desktop.background", "draw-background", "false"])
             subprocess.call(["gsettings", "set", "org.gnome.desktop.background", "picture-uri", "file://" + file_path])
@@ -176,14 +178,14 @@ def save_img(arg, date, time, to_image):
     output_file = os.path.join(arg.outdir, "fydesktop-%s%s.png" % (date, time))
     print("\nSaving to '%s'..." % (output_file,))
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
-    if(not arg.save_his):
+    if (not arg.save_his):
         for file in iglob(os.path.join(arg.outdir, "fydesktop-*.png")):
             os.remove(file)
     to_image.save(output_file)
     set_wall(output_file)
 
 
-def main():
+def tick():
     arg = parse_arg()
 
     lever = arg.lever
@@ -196,6 +198,28 @@ def main():
     pool.wait()
 
     save_img(arg, date, time, to_image)
+    print('Tick! The time is: %s' % datetime.now())
+
+
+def main():
+    tick()
+    try:
+        executors = {
+            'default': {'type': 'threadpool', 'max_workers': 20},
+            'processpool': ProcessPoolExecutor(max_workers=5)
+        }
+        job_defaults = {
+            'coalesce': False,
+            'max_instances': 3
+        }
+        scheduler = BackgroundScheduler(executors=executors, job_defaults=job_defaults)
+        scheduler.add_job(tick, trigger="interval", seconds=900, id="tick")
+        scheduler.start()
+        scheduler.print_jobs()
+        input()
+        scheduler.shutdown()
+    except:
+        scheduler.shutdown()
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ setup(
     license="MIT",
     description="fydesktop is a Python 3 script",
     long_description="fydesktop is a Python 3 script",
-    install_requires=["threadpool","appdirs","pillow"],
+    install_requires=["threadpool","appdirs","pillow","apscheduler"],
     packages=find_packages(),
     entry_points={
         'console_scripts': [
