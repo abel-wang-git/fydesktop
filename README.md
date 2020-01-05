@@ -54,6 +54,21 @@ windows安装后会打印命令安装的位置 一般为 C:\Users\Administrator\
      WantedBy=multi-user.target
 #### 启用
     systemctl enable fydesktopTimer.timer
-
+### archlinux 下xfce4中system无法设置背景
+    新装系统后发现怎么也无法设置背景 ，最后发现是找不到环境变量
+    修改 /etc/X11/xinit/xinitrc.d/50-systemd-user.sh 文件 添加 DESKTOP_SESSION
+    ```Bash
+    #!/bin/sh
+    systemctl --user import-environment DISPLAY XAUTHORITY DESKTOP_SESSION
+    
+    if command -v dbus-update-activation-environment >/dev/null 2>&1; then
+        dbus-update-activation-environment DISPLAY XAUTHORITY DESKTOP_SESSION
+    fi
+    ```
+    修改 ~/.xprofile 文件 在最后添加上面的脚本
+    ```Bash
+    ...
+    /etc/X11/xinit/xinitrc.d/50-systemd-user.sh
+    ```
 ##  [KDE用户](https://github.com/boramalper/himawaripy#for-kde-users)
 ##  [OS X](https://github.com/boramalper/himawaripy#for-mac-osx-users)
