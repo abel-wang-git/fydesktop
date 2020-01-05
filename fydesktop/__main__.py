@@ -15,7 +15,7 @@ import PIL.Image as Image
 import appdirs
 import threadpool
 from apscheduler.executors.pool import ProcessPoolExecutor
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 # 坐标范围
 x = -5500
@@ -67,7 +67,7 @@ def get_desktop_environment():
         return "mac"
     else:  # Most likely either a POSIX system or something not much common
         desktop_session = os.environ.get("DESKTOP_SESSION")
-        if desktop_session is not None:  # easier to match if we doesn't have  to deal with caracter cases
+        if desktop_session != None:  # easier to match if we doesn't have  to deal with caracter cases
             desktop_session = desktop_session.lower()
             if desktop_session in ["gnome", "unity", "cinnamon", "mate", "xfce4", "lxde", "fluxbox",
                                    "blackbox", "openbox", "icewm", "jwm", "afterstep", "trinity", "kde"]:
@@ -212,12 +212,10 @@ def main():
             'coalesce': False,
             'max_instances': 3
         }
-        scheduler = BackgroundScheduler(executors=executors, job_defaults=job_defaults)
+        scheduler = BlockingScheduler(executors=executors, job_defaults=job_defaults)
         scheduler.add_job(tick, trigger="interval", seconds=900, id="tick")
         scheduler.start()
         scheduler.print_jobs()
-        input()
-        scheduler.shutdown()
     except:
         scheduler.shutdown()
 
