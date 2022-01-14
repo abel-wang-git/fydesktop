@@ -23,7 +23,7 @@ fydesktop是基于python3的一个脚本，它会实时获取地球图片设置�
   需要先安装pthon3 （python2下未测试）
   ```Bash
   cd fydesktop
-  python setup.py install
+  python3 setup.py install
   fydesktop
   ```
 ## win10定时任务
