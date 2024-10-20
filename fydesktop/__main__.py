@@ -81,7 +81,6 @@ def tick():
 
     response = urllib.request.urlopen(first_image_url)
     imageByte = Image.open(io.BytesIO(response.read()))
-    # imageByte.save('downloaded_image.jpg', format="JPEG")
     width, height = imageByte.size
     imageHeight = int(height * 1.5)
     to_image = Image.new('RGB', (int(imageHeight * monitorProportion), imageHeight))

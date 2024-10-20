@@ -91,4 +91,7 @@ windows安装后会打印命令安装的位置 一般为 C:\Users\Administrator\
 ## [KDE用户](https://github.com/boramalper/himawaripy#for-kde-users)
 
 ## [OS X](https://github.com/boramalper/himawaripy#for-mac-osx-users)
+    mkdir -p ~/Library/LaunchAgents/
+    cp osx/org.fydesktop.plist ~/Library/LaunchAgents/ 
+    launchctl load ~/Library/LaunchAgents/org.fydesktop.plist
 

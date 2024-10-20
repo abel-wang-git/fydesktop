@@ -14,7 +14,7 @@
   <integer>1</integer>
 
   <key>StartInterval</key>
-  <integer>600</integer>
+  <integer>7200</integer>
 
   <key>RunAtLoad</key>
   <true/>
