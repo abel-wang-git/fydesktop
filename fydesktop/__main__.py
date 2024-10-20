@@ -1,19 +1,19 @@
 import argparse
 import io
-import json
+import xml.etree.ElementTree as ET
 import os
 import urllib.request
 from datetime import datetime
 from glob import iglob
 
 import PIL.Image as Image
+Image.MAX_IMAGE_PIXELS = None
 import appdirs
-import threadpool
-from apscheduler.executors.pool import ProcessPoolExecutor
-from apscheduler.schedulers.blocking import BlockingScheduler
 
 # 坐标范围
 from fydesktop import util
+
+from screeninfo import get_monitors
 
 x = -5500
 y = 5500
@@ -21,27 +21,16 @@ y = 5500
 
 def getlast():
     # 获取最后更新的日期和时间
-    url = "http://fy4.nsmc.org.cn/nsmc/v1/nsmc/image/animation/datatime/mongodb?dataCode=FY4A-_AGRI--_N_DISK_1047E_L1C_MTCC_MULT_NOM_YYYYMMDDhhmmss_YYYYMMDDhhmmss_4000M_V0001.JPG&hourRange=3&isHaveNight=1&isCustomTime=false&endTime=2018-07-11+16%3A00%3A00"
+    url = "https://img.nsmc.org.cn/PORTAL/NSMC/XML/FY4B/FY4B_AGRI_IMG_DISK_GCLR_NOM.xml"
     resp = urllib.request.urlopen(url)
-    last = json.loads(resp.read())
-    date = last.get("ds")[-1].get("dataDate")
-    time = last.get("ds")[-1].get("dataTime")[0:4]
-    return date, time, "https://satellite.nsmc.org.cn/mongoTile_DSS/NOM/TileServer.php?layer=PRODUCT&PRODUCT=FY4A-_AGRI--_N_DISK_1047E_L1C_MTCC_MULT_NOM_YYYYMMDDhhmmss_YYYYMMDDhhmmss_4000M_V0001.JPG&DATE=" + date + "&TIME=" + time + "&&ENDTIME=&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&TRANSPARENT=true&LAYERS=satellite&NOTILE=BLACK&TILED=true&WIDTH=256&HEIGHT=256&SRS=EPSG%3A11111&STYLES=&BBOX="
+    last = resp.read()
+    decoded_data = last.decode("utf-8")
+    root = ET.fromstring(decoded_data)
+    first_image = root.find('image')
+    first_image_time = first_image.get('time').split(' ')[0]
+    first_image_url = first_image.get('url')
+    return first_image_time, first_image_url
 
-
-# 生成坐标
-def genurl(baseurl, lever, to_image):
-    index = 0
-    params = []
-    for a in range((lever * 2) * (lever * 2)):
-        x1 = x + ((index % (lever * 2)) * int(5500 / lever))
-        y1 = 5500 - int((index / (lever * 2) + 1)) * int(5500 / lever)
-        y2 = 5500 - int(index / (lever * 2)) * int(5500 / lever)
-        x2 = x + (((index % (lever * 2)) + 1) * int(5500 / lever))
-        param = [baseurl + str(x1) + ',' + str(y1) + ',' + str(x2) + ',' + str(y2), index, lever, to_image]
-        params.append((param, None))
-        index += 1
-    return params
 
 
 def download(url, index, lever, to_image):
@@ -56,6 +45,7 @@ def download(url, index, lever, to_image):
             print(e)
             print("[{}/3] Retrying to download ...\n".format(i))
 
+
 def parse_arg():
     parser = argparse.ArgumentParser(description='manual to this script')
     parser.add_argument('-lever', type=int, default=2, help="lever (2,4,8)", )
@@ -67,50 +57,40 @@ def parse_arg():
     return args
 
 
-def save_img(arg, date, time, to_image):
-    output_file = os.path.join(arg.outdir, "fydesktop-%s%s.png" % (date, time))
+def save_img(arg, date, to_image):
+    output_file = os.path.join(arg.outdir, "fydesktop-%s.jpg" % (date))
     print("\nSaving to '%s'..." % (output_file,))
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     if (not arg.save_his):
-        for file in iglob(os.path.join(arg.outdir, "fydesktop-*.png")):
+        for file in iglob(os.path.join(arg.outdir, "fydesktop-*.jpg")):
             os.remove(file)
-    to_image.save(output_file)
+    to_image.save(output_file,format="JPEG")
     util.set_background(output_file)
 
 
 def tick():
     arg = parse_arg()
+    monitors = get_monitors()
+    monitorProportion = 1
+    for monitor in monitors:
+        prop = monitor.width / monitor.height
+        if prop > monitorProportion:
+            monitorProportion = monitor.width / monitor.height
 
-    lever = arg.lever
-    to_image = Image.new('RGB', (lever * 2 * 512, lever * 2 * 512))
-    date, time, baseurl = getlast()
+    first_image_time, first_image_url = getlast()
 
-    pool = threadpool.ThreadPool(10)
-    tasks = threadpool.makeRequests(download, genurl(baseurl, lever, to_image))
-    [pool.putRequest(task) for task in tasks]
-    pool.wait()
-
-    save_img(arg, date, time, to_image)
+    response = urllib.request.urlopen(first_image_url)
+    imageByte = Image.open(io.BytesIO(response.read()))
+    # imageByte.save('downloaded_image.jpg', format="JPEG")
+    width, height = imageByte.size
+    imageHeight = int(height * 1.5)
+    to_image = Image.new('RGB', (int(imageHeight * monitorProportion), imageHeight))
+    to_image.paste(imageByte, (int((imageHeight * monitorProportion/2)-(width/2)), int(height * 0.25)))
+    save_img(arg, first_image_time, to_image)
     print('Tick! The time is: %s' % datetime.now())
-
 
 def main():
     tick()
-    # try:
-    #     executors = {
-    #         'default': {'type': 'threadpool', 'max_workers': 20},
-    #         'processpool': ProcessPoolExecutor(max_workers=5)
-    #     }
-    #     job_defaults = {
-    #         'coalesce': False,
-    #         'max_instances': 3
-    #     }
-    #     scheduler = BlockingScheduler(executors=executors, job_defaults=job_defaults)
-    #     scheduler.add_job(tick, trigger="interval", seconds=900, id="tick")
-    #     scheduler.start()
-    #     scheduler.print_jobs()
-    # except:
-    #     scheduler.shutdown()
 
 
 if __name__ == "__main__":
